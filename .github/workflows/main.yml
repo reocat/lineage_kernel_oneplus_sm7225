@@ -41,6 +41,7 @@ jobs:
           aria2c -j$(nproc --all) $(curl -fsSL https://github.com/ZyCromerZ/Clang/raw/main/Clang-main-link.txt)
           mkdir zyc-clang
           tar -xzvf Clang-*.tar.gz -C zyc-clang >> /dev/null
+          rm zyc-clang/bin/as
           git clone https://github.com/osm0sis/AnyKernel3
           sed -i 's/do.devicecheck=1/do.devicecheck=0/g' AnyKernel3/anykernel.sh
           sed -i 's!BLOCK=/dev/block/platform/omap/omap_hsmmc.0/by-name/boot;!BLOCK=auto;!g' AnyKernel3/anykernel.sh
@@ -53,7 +54,7 @@ jobs:
           echo "TIME=$(TZ=UTC+3 date +%s )" >> $GITHUB_OUTPUT
       - name: Build Kernel-With-KernelSU
         run: |
-          export PATH=$(pwd)/zyc-clang/bin/:$PATH
+          export PATH=$(pwd)/zyc-clang/bin/:$(pwd)/zyc-clang/aarch64-linux-gnu/bin/:$PATH
           make $KERNEL_CMDLINE $KERNEL_DEFCONFIG CC="ccache clang"
           make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
           cp out/arch/arm64/boot/Image-dtb AnyKernel3
